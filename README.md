@@ -1,0 +1,2 @@
+# DummyInTaiwan_STM
+ 
