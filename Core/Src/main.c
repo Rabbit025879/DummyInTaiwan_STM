@@ -77,6 +77,11 @@ DMA_HandleTypeDef hdma_usart3_rx;
 DMA_HandleTypeDef hdma_usart3_tx;
 
 /* USER CODE BEGIN PV */
+/*Reset*/
+int Reset = 0;
+/*All at Once*/
+double Once = 0.0;
+double TEMP = 0.0;
 /*Switch*/
 int Switch = 1;
 /*Stepper*/
@@ -92,11 +97,15 @@ double position_3 = 0.0;
 double angle_1 = 0.0;
 double angle_2 = 0.0;
 double angle_3 = 0.0;
-double ratio = 27.0;
-double ratio_3 = 1.538;
+double ratio_1 = 27.0;
+double ratio_2 = 27.0;
+double ratio_3 = 4.658;
 int direction_1 = 1;
 int direction_2 = 1;
 int direction_3 = 1;
+double relate_1 = 0.0;
+double relate_2 = 0.0;
+double relate_3 = 0.0;
 int i = 0;
 int j = 0;
 int k = 0;
@@ -114,16 +123,19 @@ int error_1 = 1000;
 int error_2 = 1000;
 int error_3 = 1000;
 double percent = 0.25;
+int x = 5;
+double y = 12;
 /*Servo*/
 double degree_1 = 0.0;
 double degree_2 = 0.0;
 double pulse_1 = 0.0;
-double Deg = 0.0;
-double t = 0.0;
-int u = 0;
+double pulse_2 = 0.0;
+double Deg_1 = 0.0;
+double Deg_2 = 0.0;
 int a = 0;
-double temp = 0.0;
-int limit = 50;
+int b = 0;
+double temp_1 = 0.0;
+double temp_2 = 0.0;
 /*int grab = 0;*/
 /*tighten duration*/
 /*int Time_a = 0;
@@ -227,20 +239,49 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	/*Reset*/
+
+	if(Reset == 1)
+	{
+		HAL_NVIC_SystemReset();
+		Reset = 0;
+	}
+
+	/*Relative target*/
+	target_1 += relate_1;
+	relate_1 = 0;
+	target_2 += relate_2;
+	relate_2 = 0;
+	target_3 += relate_3;
+	relate_3 = 0;
+
+	/*All at Once*/
+	if(Once != TEMP)
+	{
+		target_1 = Once;
+		target_2 = Once;
+		target_3 = Once;
+	}
+
+	TEMP = Once;
+
+	/*Enable*/
 	HAL_GPIO_WritePin(GPIOG,GPIO_PIN_2,Switch);
 
 
 	/*stepper_1*/
 	/*Record position & reset i (Considering the circumstances which target changed while operating)*/
-	if(i >= (fabs(targeted_1-position_1)/1.8*8*2*ratio) || target_1 != targeted_1)
+	if(i >= (fabs(targeted_1-position_1)/1.8*8*2*ratio_1) || target_1 != targeted_1)
 	{
 		if(direction_1 == 1)
-			position_1 += round(1.8/8/2/ratio*i);
+			position_1 += round(1.8/8/2/ratio_1*i);
 		else if(direction_1 == 0)
-			position_1 -= round(1.8/8/2/ratio*i);
-
+			position_1 -= round(1.8/8/2/ratio_1*i);
 		i = 0;
 	}
+	/*Record target*/
+	targeted_1 = target_1;
 	/*DIR*/
 	if((targeted_1-position_1)>=0)
 	{
@@ -252,50 +293,66 @@ int main(void)
 		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_9,GPIO_PIN_RESET);
 		direction_1 = 0;
 	}
-	/*angle*/
-	angle_1 = targeted_1-position_1;
 	/*Record target*/
 	targeted_1 = target_1;
+	/*angle*/
+	angle_1 = targeted_1-position_1;
 
 	/*stepper_2*/
 	/*Record position & reset j (Considering the circumstances which target changed while operating)*/
-	if(j >= (fabs(target_2-position_2)/1.8*8*2*ratio) || target_2 != targeted_2)
+	if(j >= (fabs(targeted_2-position_2)/1.8*8*2*ratio_2) || target_2 != targeted_2)
 	{
-		if((target_2-position_2)>=0)
-			position_2 += round(1.8/8/2/ratio*j);
-		else
-			position_2 -= round(1.8/8/2/ratio*j);
+		if(direction_2 == 1)
+			position_2 += round(1.8/8/2/ratio_2*j);
+		else if(direction_2 == 0)
+			position_2 -= round(1.8/8/2/ratio_2*j);
 		j = 0;
 	}
-	/*DIR*/
-	if((target_2-position_2)>=0)
-		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_11,GPIO_PIN_SET);
-	else
-		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_11,GPIO_PIN_RESET);
-	/*angle*/
-	angle_2 = targeted_2-position_2;
 	/*Record target*/
 	targeted_2 = target_2;
+	/*DIR*/
+	if((targeted_2-position_2)>=0)
+	{
+		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_11,GPIO_PIN_SET);
+		direction_2 = 1;
+	}
+	else
+	{
+		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_11,GPIO_PIN_RESET);
+		direction_2 = 0;
+	}
+	/*Record target*/
+	targeted_2 = target_2;
+	/*angle*/
+	angle_2 = targeted_2-position_2;
 
 	/*stepper_3*/
 	/*Record position & reset k (Considering the circumstances which target changed while operating)*/
-	if(k >= (fabs(target_3-position_3)/1.8*8*2*ratio_3) || target_3 != targeted_3)
+	if(k >= (fabs(targeted_3-position_3)/1.8*8*2*ratio_3) || target_3 != targeted_3)
 	{
-		if((target_3-position_3)>=0)
+		if(direction_3 == 1)
 			position_3 += round(1.8/8/2/ratio_3*k);
-		else
+		else if(direction_3 == 0)
 			position_3 -= round(1.8/8/2/ratio_3*k);
 		k = 0;
 	}
-	/*DIR*/
-	if((target_3-position_3)<=0)
-		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_2,GPIO_PIN_SET);
-	else
-		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_2,GPIO_PIN_RESET);
-	/*angle*/
-	angle_3 = targeted_3-position_3;
 	/*Record target*/
 	targeted_3 = target_3;
+	/*DIR*/
+	if((targeted_3-position_3)>=0)
+	{
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_2,GPIO_PIN_RESET);
+		direction_3 = 1;
+	}
+	else
+	{
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_2,GPIO_PIN_SET);
+		direction_3 = 0;
+	}
+	/*Record target*/
+	targeted_3 = target_3;
+	/*angle*/
+	angle_3 = targeted_3-position_3;
 
   }
   /* USER CODE END 3 */
@@ -316,7 +373,7 @@ void SystemClock_Config(void)
 
   /** Configure the main internal regulator output voltage
   */
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
 
@@ -329,13 +386,13 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 1;
-  RCC_OscInitStruct.PLL.PLLN = 42;
+  RCC_OscInitStruct.PLL.PLLN = 68;
   RCC_OscInitStruct.PLL.PLLP = 1;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   RCC_OscInitStruct.PLL.PLLR = 2;
   RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_3;
   RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
-  RCC_OscInitStruct.PLL.PLLFRACN = 0;
+  RCC_OscInitStruct.PLL.PLLFRACN = 6144;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -347,14 +404,14 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
                               |RCC_CLOCKTYPE_D3PCLK1|RCC_CLOCKTYPE_D1PCLK1;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV2;
+  RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV2;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
   RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
   {
     Error_Handler();
   }
@@ -428,7 +485,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 83;
+  htim1.Init.Prescaler = 274;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 1999;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -475,7 +532,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 83;
+  htim2.Init.Prescaler = 274;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 19999;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -524,7 +581,7 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 83;
+  htim3.Init.Prescaler = 274;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 1999;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -569,7 +626,7 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 83;
+  htim4.Init.Prescaler = 274;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 999;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -614,7 +671,7 @@ static void MX_TIM5_Init(void)
 
   /* USER CODE END TIM5_Init 1 */
   htim5.Instance = TIM5;
-  htim5.Init.Prescaler = 83;
+  htim5.Init.Prescaler = 274;
   htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim5.Init.Period = 999;
   htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -660,7 +717,7 @@ static void MX_TIM8_Init(void)
 
   /* USER CODE END TIM8_Init 1 */
   htim8.Instance = TIM8;
-  htim8.Init.Prescaler = 83;
+  htim8.Init.Prescaler = 274;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim8.Init.Period = 999;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -728,7 +785,7 @@ static void MX_TIM12_Init(void)
 
   /* USER CODE END TIM12_Init 1 */
   htim12.Instance = TIM12;
-  htim12.Init.Prescaler = 83;
+  htim12.Init.Prescaler = 274;
   htim12.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim12.Init.Period = 49999;
   htim12.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -767,7 +824,7 @@ static void MX_TIM15_Init(void)
 
   /* USER CODE END TIM15_Init 1 */
   htim15.Instance = TIM15;
-  htim15.Init.Prescaler = 83;
+  htim15.Init.Prescaler = 274;
   htim15.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim15.Init.Period = 1999;
   htim15.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -813,7 +870,7 @@ static void MX_TIM23_Init(void)
 
   /* USER CODE END TIM23_Init 1 */
   htim23.Instance = TIM23;
-  htim23.Init.Prescaler = 83;
+  htim23.Init.Prescaler = 274;
   htim23.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim23.Init.Period = 19999;
   htim23.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -862,7 +919,7 @@ static void MX_TIM24_Init(void)
 
   /* USER CODE END TIM24_Init 1 */
   htim24.Instance = TIM24;
-  htim24.Init.Prescaler = 83;
+  htim24.Init.Prescaler = 274;
   htim24.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim24.Init.Period = 999;
   htim24.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -1019,12 +1076,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PE6 */
-  GPIO_InitStruct.Pin = GPIO_PIN_6;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -1037,12 +1088,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PE10 PE12 */
-  GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_12;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : USB_FS_PWR_EN_Pin PD11 PD12 PD13
                            PD2 */
@@ -1096,13 +1141,13 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+/*void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if(GPIO_Pin == GPIO_PIN_6)
 	{
 		HAL_NVIC_SystemReset();
 	}
-}
+}*/
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
@@ -1111,7 +1156,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if(htim->Instance == TIM3)
 	{
 		/*STEP*/
-		if(i < (fabs(angle_1)/1.8*8*2*ratio))
+		if(i < (fabs(angle_1)/1.8*8*2*ratio_1))
 		{
 			HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_8);
 			i++;
@@ -1121,7 +1166,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if(htim->Instance == TIM15)
 	{
 		/*STEP*/
-		if(j < (fabs(angle_2)/1.8*8*2*ratio))
+		if(j < (fabs(angle_2)/1.8*8*2*ratio_2))
 		{
 			HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_10);
 			j++;
@@ -1142,11 +1187,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if(htim->Instance == TIM4)
 	{
 		/*Stepper_1*/
-		if(i < (fabs(target_1-position_1)/1.8*8*2*ratio)*percent)
+		if(i < (fabs(target_1-position_1)/1.8*8*2*ratio_1)*percent)
  		{
 			if(ARR_1>max_speed_1)
 			{
-				ARR_1-=5;
+				ARR_1-=x;
 				if(ARR_1<=max_speed_1)
 				{
 					CNT_1 = i;
@@ -1154,11 +1199,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			}
 			__HAL_TIM_SET_AUTORELOAD(&htim3,ARR_1);
 		}
-		if(i > (fabs(target_1-position_1)/1.8*8*2*ratio)-(CNT_1+error_1) && (target_1-position_1)!=0)
+		if(i > (fabs(target_1-position_1)/1.8*8*2*ratio_1)-(CNT_1+error_1) && (target_1-position_1)!=0)
 		{
 			if(ARR_1<initial_speed)
 			{
-				ARR_1+=5;
+				ARR_1+=x;
 				if(ARR_1>=initial_speed)
 				{
 					CNT_1 = 0;
@@ -1170,11 +1215,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if(htim->Instance == TIM5)
 	{
 		/*Stepper_2*/
-		if(j < (fabs(target_2-position_2)/1.8*8*2*ratio)*percent)
+		if(j < (fabs(target_2-position_2)/1.8*8*2*ratio_2)*percent)
 		{
 			if(ARR_2>max_speed_2)
 			{
-				ARR_2-=5;
+				ARR_2-=x;
 				if(ARR_2<=max_speed_2)
 				{
 					CNT_2 = j;
@@ -1182,11 +1227,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			}
 			__HAL_TIM_SET_AUTORELOAD(&htim15,ARR_2);
 		}
-		if(j > (fabs(target_2-position_2)/1.8*8*2*ratio)-(CNT_2+error_2) && (target_2-position_2)!=0)
+		if(j > (fabs(target_2-position_2)/1.8*8*2*ratio_2)-(CNT_2+error_2) && (target_2-position_2)!=0)
 		{
 			if(ARR_2<initial_speed)
 			{
-				ARR_2+=5;
+				ARR_2+=x;
 				if(ARR_2>=initial_speed)
 				{
 					CNT_2 = 0;
@@ -1202,7 +1247,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		{
 			if(ARR_3>max_speed_3)
 			{
-				ARR_3-=5;
+				ARR_3-=x;
 				if(ARR_3<=max_speed_3)
 				{
 					CNT_3 = k;
@@ -1214,7 +1259,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		{
 			if(ARR_3<initial_speed)
 			{
-				ARR_3+=5;
+				ARR_3+=x;
 				if(ARR_3>=initial_speed)
 				{
 					CNT_3 = 0;
@@ -1226,25 +1271,44 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	/*Servo Control*/
 	if(htim->Instance == TIM12)
 	{
-		if (a < 500) a+=15;
+		/*Servo 1*/
+		if (a < 500) a+=y;
 		else a = 0;
-		if(degree_1 != temp)
+		if(degree_1 != temp_1)
 		{
-			if((degree_1-temp)>=0)
+			if((degree_1-temp_1)>=0)
 				pulse_1 = 2000;
 			else
 				pulse_1 = 1000;
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, pulse_1);
 			a = 0;
 		}
-		if(a > fabs(degree_1-Deg))
+		if(a > fabs(degree_1-Deg_1))
 		{
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0);
-			Deg = degree_1;
+			Deg_1 = degree_1;
 		}
 
-		__HAL_TIM_SET_COMPARE(&htim23, TIM_CHANNEL_1, 570+5*degree_2);
-		temp = degree_1;
+		/*Servo 2*/
+		if (b < 500) b+=y;
+		else b = 0;
+		if(degree_2 != temp_2)
+		{
+			if((degree_2-temp_2)>=0)
+				pulse_2 = 2000;
+			else
+				pulse_2 = 1000;
+			__HAL_TIM_SET_COMPARE(&htim23, TIM_CHANNEL_1, pulse_2);
+			b = 0;
+		}
+		if(b > fabs(degree_2-Deg_2))
+		{
+			__HAL_TIM_SET_COMPARE(&htim23, TIM_CHANNEL_1, 0);
+			Deg_2 = degree_2;
+		}
+
+		temp_1 = degree_1;
+		temp_2 = degree_2;
 	}
 
 }
