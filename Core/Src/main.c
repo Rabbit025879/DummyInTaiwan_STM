@@ -77,6 +77,8 @@ DMA_HandleTypeDef hdma_usart3_rx;
 DMA_HandleTypeDef hdma_usart3_tx;
 
 /* USER CODE BEGIN PV */
+/*Show off*/
+int Demo = 0;
 /*Reset*/
 int Reset = 0;
 /*All at Once*/
@@ -239,6 +241,47 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	/*Demo*/
+	switch(Demo)
+	{
+		case 1:
+			target_1 = 0;
+			target_2 = -140;
+			target_3 = -55;
+			break;
+		case 2 :
+			degree_2 = 95;
+			break;
+		case 3 :
+			target_1 = 90;
+			target_2 = -50;
+			target_3 = -55;
+			break;
+		case 4 :
+			target_1 = 90;
+			target_2 = -115;
+			target_3 = -45;
+			break;
+		case 5 :
+			degree_2 = 0;
+			break;
+		case 6 :
+			target_1 = 90;
+			target_2 = -25;
+			target_3 = -45;
+			break;
+		case 7 :
+			degree_1 = 180;
+			break;
+		case 8 :
+			degree_1 = 0;
+			break;
+		case 9 :
+			target_1 = 0;
+			target_2 = 0;
+			target_3 = 0;
+			break;
+	}
 
 	/*Reset*/
 
