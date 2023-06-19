@@ -227,6 +227,103 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+<<<<<<< Updated upstream
+=======
+	/*Demo*/
+	switch(Demo)
+	{
+		case 1:
+			target_1 = 0;
+			target_2 = -140;
+			target_3 = -55;
+			break;
+		case 2:
+			degree_2 = 95;
+			break;
+		case 3:
+			target_1 = 90;
+			target_2 = -50;
+			target_3 = -55;
+			break;
+		case 4:
+			target_1 = 90;
+			target_2 = -115;
+			target_3 = -45;
+			break;
+		case 5:
+			degree_2 = 0;
+			break;
+		case 6:
+			target_2 = -95;
+			break;
+		case 7:
+			target_1 = 45;
+			break;
+		case 8:
+			target_2 = -138;
+			target_3 = -55;
+			break;
+		case 9:
+			degree_2 = 100;
+			break;
+		case 10:
+			target_2 = -95;
+			break;
+		case 11:
+			degree_1 = 90;
+			break;
+		case 12:
+			target_1 = 90;
+			degree_1 = -10;
+			break;
+		case 13:
+			target_1 = 90;
+			target_2 = -90;
+			target_3 = -35;
+			break;
+		case 14:
+			degree_2 = 0;
+			break;
+		case 15:			// OLD
+			target_1 = 90;
+			target_2 = -25;
+			target_3 = -45;
+			break;;
+		case 16:
+			target_1 = 0;
+			target_2 = 0;
+			target_3 = 0;
+			break;
+	}
+
+	/*Reset*/
+
+	if(Reset == 1)
+	{
+		HAL_NVIC_SystemReset();
+		Reset = 0;
+	}
+
+	/*Relative target*/
+	target_1 += relate_1;
+	relate_1 = 0;
+	target_2 += relate_2;
+	relate_2 = 0;
+	target_3 += relate_3;
+	relate_3 = 0;
+
+	/*All at Once*/
+	if(Once != TEMP)
+	{
+		target_1 = Once;
+		target_2 = Once;
+		target_3 = Once;
+	}
+
+	TEMP = Once;
+
+	/*Enable*/
+>>>>>>> Stashed changes
 	HAL_GPIO_WritePin(GPIOG,GPIO_PIN_2,Switch);
 
 
