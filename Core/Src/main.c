@@ -79,6 +79,18 @@ DMA_HandleTypeDef hdma_usart3_tx;
 /* USER CODE BEGIN PV */
 /*Show off*/
 int Demo = 0;
+int Cube = 85;
+
+int down_p = 0;
+int down_n = 0;
+int mid_p = 0;
+int mid_n = 0;
+int up_p = 0;
+int up_n = 0;
+int rotate_p = 0;
+int rotate_n = 0;
+int grab = 0;
+int loose = 0;
 /*Reset*/
 int Reset = 0;
 /*All at Once*/
@@ -193,7 +205,8 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+
+	HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -241,42 +254,124 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	/*Button*/
+	if(down_p == 1)
+	{
+		target_1++;
+		if(target_1>180)
+			target_1 = 180;
+	}
+	if(down_n == 1)
+	{
+		target_1--;
+		if(target_1<0)
+			target_1 = 0;
+	}
+	if(mid_p == 1)
+	{
+		target_2++;
+		if(target_2>180)
+			target_2 = 180;
+	}
+	if(mid_n == 1)
+	{
+		target_2--;
+		if(target_2<0)
+			target_2 = 0;
+	}
+	if(up_p == 1)
+	{
+		target_3++;
+		if(target_3>180)
+			target_3 = 180;
+	}
+	if(up_n == 1)
+	{
+		target_3--;
+		if(target_3<0)
+			target_3 = 0;
+	}
+	if(rotate_p == 1)
+	{
+		degree_1++;
+		if(degree_1>90)
+			target_3 = 90;
+	}
+	if(rotate_n == 1)
+	{
+		degree_1--;
+		if(degree_1<-90)
+			target_3 = -90;
+	}
+	if(grab == 1)
+	{
+		degree_2 = Cube;
+	}
+	if(loose == 1)
+	{
+		degree_2 = 0;
+	}
 	/*Demo*/
 	switch(Demo)
 	{
 		case 1:
 			target_1 = 0;
-			target_2 = -140;
+			target_2 = -138;
 			target_3 = -55;
 			break;
-		case 2 :
-			degree_2 = 95;
+		case 2:
+			degree_2 = 90;
 			break;
-		case 3 :
+		case 3:
 			target_1 = 90;
 			target_2 = -50;
 			target_3 = -55;
 			break;
-		case 4 :
+		case 4:
 			target_1 = 90;
 			target_2 = -115;
 			target_3 = -45;
 			break;
-		case 5 :
+		case 5:
 			degree_2 = 0;
 			break;
-		case 6 :
+		case 6:
+			target_2 = -95;
+			break;
+		case 7:
+			target_1 = 45;
+			break;
+		case 8:
+			target_2 = -138;
+			target_3 = -55;
+			break;
+		case 9:
+			degree_2 = 90;
+			break;
+		case 10:
+			target_2 = -95;
+			break;
+		case 11:
+			degree_1 = 90;
+			break;
+		case 12:
+			target_1 = 90;
+			degree_1 = 0;
+			break;
+		case 13:
+			target_1 = 90;
+			target_2 = -90;
+			target_3 = -35;
+			break;
+		case 14:
+			degree_2 = 0;
+			break;
+		case 15:			// OLD
 			target_1 = 90;
 			target_2 = -25;
 			target_3 = -45;
-			break;
-		case 7 :
-			degree_1 = 180;
-			break;
-		case 8 :
-			degree_1 = 0;
-			break;
-		case 9 :
+			break;;
+		case 16:
 			target_1 = 0;
 			target_2 = 0;
 			target_3 = 0;
@@ -1314,8 +1409,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	/*Servo Control*/
 	if(htim->Instance == TIM12)
 	{
+		/*speed_control*/
 		/*Servo 1*/
-		if (a < 500) a+=y;
+		/*if (a < 500) a+=y;
 		else a = 0;
 		if(degree_1 != temp_1)
 		{
@@ -1330,10 +1426,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		{
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0);
 			Deg_1 = degree_1;
-		}
+		}*/
 
 		/*Servo 2*/
-		if (b < 500) b+=y;
+		/*if (b < 500) b+=y;
 		else b = 0;
 		if(degree_2 != temp_2)
 		{
@@ -1351,7 +1447,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		}
 
 		temp_1 = degree_1;
-		temp_2 = degree_2;
+		temp_2 = degree_2;*/
+
+		/*angle_control*/
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 350+(degree_1+96)*(2250-350)/180);
+		if(Switch)
+		{
+			__HAL_TIM_SET_COMPARE(&htim23, TIM_CHANNEL_1, 0);
+		}
+		else
+		{
+			__HAL_TIM_SET_COMPARE(&htim23, TIM_CHANNEL_1, 350+(degree_2)*(2300-350)/180);
+		}
 	}
 
 }
