@@ -78,8 +78,9 @@ DMA_HandleTypeDef hdma_usart3_tx;
 
 /* USER CODE BEGIN PV */
 /*Show off*/
-int Demo = 0;
-int Cube = 85;
+int Demo_1 = 0;
+int Demo_2 = 0;
+int Cube = 90;
 
 int down_p = 0;
 int down_n = 0;
@@ -255,7 +256,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	/*Button*/
-	if(down_p == 1)
+	/*if(down_p == 1)
 	{
 		target_1++;
 		if(target_1>180)
@@ -302,17 +303,19 @@ int main(void)
 		degree_1--;
 		if(degree_1<-90)
 			target_3 = -90;
-	}
+	}*/
 	if(grab == 1)
 	{
 		degree_2 = Cube;
+		grab = 0;
 	}
 	if(loose == 1)
 	{
 		degree_2 = 0;
+		loose = 0;
 	}
-	/*Demo*/
-	switch(Demo)
+	/*Demo1*/
+	switch(Demo_1)
 	{
 		case 1:
 			target_1 = 0;
@@ -377,7 +380,11 @@ int main(void)
 			target_3 = 0;
 			break;
 	}
+	/*Demo2*/
+	/*if(Demo_2)
+	{
 
+	}*/
 	/*Reset*/
 
 	if(Reset == 1)
