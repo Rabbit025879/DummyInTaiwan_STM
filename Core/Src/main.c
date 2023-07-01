@@ -77,10 +77,17 @@ DMA_HandleTypeDef hdma_usart3_rx;
 DMA_HandleTypeDef hdma_usart3_tx;
 
 /* USER CODE BEGIN PV */
+/*initialize*/
+int ini = 1;
+int ini_1 = 1;
+int ini_2 = 1;
+int ini_3 = 1;
 /*Show off*/
 int Demo_1 = 0;
 int Demo_2 = 0;
-int Cube = 90;
+int Demo_3 = 0;
+int Cube = 100;
+int step = 1;
 
 int down_p = 0;
 int down_n = 0;
@@ -95,11 +102,17 @@ int loose = 0;
 /*Reset*/
 int Reset = 0;
 /*All at Once*/
-double Once = 0.0;
+double Once = -0.0;
 double TEMP = 0.0;
 /*Switch*/
 int Switch = 1;
 /*Stepper*/
+int done_1 = 0;
+int done_2 = 0;
+int done_3 = 0;
+int deceleration_1 = 0;
+double temp_target_1 = 0.0;
+int directioned_1 = 1;
 double target_1 = 0.0;
 double target_2 = 0.0;
 double target_3 = 0.0;
@@ -315,78 +328,819 @@ int main(void)
 		loose = 0;
 	}
 	/*Demo1*/
-	switch(Demo_1)
+	/*switch(Demo_1)
 	{
 		case 1:
+			if(ini)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				ini = 0;
+			}
 			target_1 = 0;
 			target_2 = -138;
 			target_3 = -55;
+			if(done_2 == 1)
+			{
+				if(done_3 == 1)
+				{
+					done_1 = 0;
+					done_2 = 0;
+					done_3 = 0;
+					Demo_1 = 2;
+				}
+			}
 			break;
 		case 2:
+			HAL_Delay(50);
 			degree_2 = 90;
+			HAL_Delay(1500);
+			Demo_1 = 3;
 			break;
 		case 3:
+			HAL_Delay(50);
 			target_1 = 90;
 			target_2 = -50;
-			target_3 = -55;
+			if(done_1 == 1 && done_2 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_1 = 4;
+			}
 			break;
 		case 4:
-			target_1 = 90;
+			HAL_Delay(50);
 			target_2 = -115;
 			target_3 = -45;
+			if(done_2 == 1)
+			{
+				if(done_3 == 1)
+				{
+					done_1 = 0;
+					done_2 = 0;
+					done_3 = 0;
+					Demo_1 = 5;
+				}
+			}
 			break;
 		case 5:
+			HAL_Delay(50);
 			degree_2 = 0;
+			HAL_Delay(1500);
+			Demo_1 = 6;
 			break;
 		case 6:
+			HAL_Delay(50);
 			target_2 = -95;
+			if(done_2 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_1 = 7;
+			}
 			break;
 		case 7:
+			HAL_Delay(50);
 			target_1 = 45;
+			if(done_1 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_1 = 8;
+			}
 			break;
 		case 8:
+			HAL_Delay(50);
 			target_2 = -138;
 			target_3 = -55;
+			if(done_2 == 1 && done_3 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_1 = 9;
+			}
 			break;
 		case 9:
+			HAL_Delay(50);
 			degree_2 = 90;
+			HAL_Delay(1500);
+			Demo_1 = 10;
 			break;
 		case 10:
+			HAL_Delay(50);
 			target_2 = -95;
+			if(done_2 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_1 = 11;
+			}
 			break;
 		case 11:
+			HAL_Delay(50);
 			degree_1 = 90;
+			HAL_Delay(1500);
+			Demo_1 = 12;
 			break;
 		case 12:
+			HAL_Delay(50);
 			target_1 = 90;
 			degree_1 = 0;
+			if(done_1 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_1 = 13;
+			}
 			break;
 		case 13:
-			target_1 = 90;
+			HAL_Delay(50);
 			target_2 = -90;
 			target_3 = -35;
+			if(done_2 == 1)
+			{
+				if(done_3 == 1)
+				{
+					done_1 = 0;
+					done_2 = 0;
+					done_3 = 0;
+					Demo_1 = 14;
+				}
+			}
 			break;
 		case 14:
+			HAL_Delay(50);
 			degree_2 = 0;
+			HAL_Delay(1500);
+			Demo_1 = 15;
 			break;
 		case 15:			// OLD
-			target_1 = 90;
+			HAL_Delay(50);
 			target_2 = -25;
 			target_3 = -45;
-			break;;
+			if(done_2 == 1)
+			{
+				if(done_3 == 1)
+				{
+					done_1 = 0;
+					done_2 = 0;
+					done_3 = 0;
+					Demo_1 = 16;
+				}
+			}
+			break;
 		case 16:
+			HAL_Delay(50);
 			target_1 = 0;
 			target_2 = 0;
 			target_3 = 0;
+			if(done_1 == 1 && done_2 == 1)
+			{
+				if(done_3 == 1)
+				{
+					done_1 = 0;
+					done_2 = 0;
+					done_3 = 0;
+					Demo_1 = 0;
+				}
+			}
+			break;
+	}*/
+	/*Demo2*/
+	/*switch(Demo_2)
+	{
+		case 1:
+			if(ini)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				ini = 0;
+			}
+			target_1 = -188;
+			target_2 = -170;
+			target_3 = -75;
+			if(done_1 == 1 && done_2 == 1)
+			{
+				if(done_3 == 1)
+				{
+					done_1 = 0;
+					done_2 = 0;
+					done_3 = 0;
+					Demo_2 = 2;
+				}
+			}
+			break;
+		case 2:
+			HAL_Delay(50);
+			degree_2 = Cube;
+			HAL_Delay(1500);
+			Demo_2 = 3;
+			break;
+		case 3:
+			HAL_Delay(50);
+			target_2 = -140;
+			if(done_2 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_2 = 4;
+			}
+			break;
+		case 4:
+			HAL_Delay(50);
+			target_1 = -148;
+			HAL_Delay(1000);
+			target_2 = -165;
+			target_3 = -85;
+			if(done_1 == 1 && done_2 == 1)
+			{
+				if(done_3 == 1)
+				{
+					done_1 = 0;
+					done_2 = 0;
+					done_3 = 0;
+					Demo_2 = 5;
+				}
+			}
+			break;
+		case 5:
+			HAL_Delay(50);
+			degree_2 = 0;
+			HAL_Delay(1500);
+			Demo_2 = 6;
+			break;
+		case 6:
+			HAL_Delay(50);
+			target_2 = -155;
+			if(done_2 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_2 = 7;
+			}
+			break;
+		case 7:
+			HAL_Delay(50);
+			target_1 = -170;
+			target_3 = -110;
+			if(done_1 == 1 && done_3 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_2 = 8;
+			}
+			break;
+		case 8:
+			HAL_Delay(50);
+			target_2 = -177;
+			if(done_2 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_2 = 9;
+			}
+			break;
+		case 9:
+			HAL_Delay(50);
+			degree_2 = Cube;
+			HAL_Delay(1500);
+			Demo_2 = 10;
+			break;
+		case 10:
+			HAL_Delay(50);
+			target_2 = -158;
+			if(done_2 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_2 = 11;
+			}
+			break;
+		case 11:
+			HAL_Delay(50);
+			target_1 = -149;
+			target_2 = -147;
+			target_3 = -80;
+			if(done_1 == 1 && done_2 == 1 && done_3 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_2 = 12;
+			}
+			break;
+		case 12:
+			HAL_Delay(50);
+			degree_2 = 0;
+			HAL_Delay(1500);
+			Demo_2 = 13;
+			break;
+		case 13:
+			HAL_Delay(50);
+			target_2 = -137;
+			if(done_2 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_2 = 14;
+			}
+			break;
+		case 14:
+			HAL_Delay(50);
+			degree_1 = -15;
+			HAL_Delay(1500);
+			Demo_2 = 15;
+			break;
+		case 15:
+			HAL_Delay(50);
+			target_1 = -199;
+			target_3 = -117;
+			if(done_1 == 1)
+			{
+				if(done_3 == 1)
+				{
+					done_1 = 0;
+					done_2 = 0;
+					done_3 = 0;
+					Demo_2 = 16;
+				}
+			}
+			break;
+		case 16:
+			HAL_Delay(50);
+			target_2 = -179;
+			if(done_2 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_2 = 17;
+			}
+			break;
+		case 17:
+			HAL_Delay(50);
+			degree_2 = Cube;
+			HAL_Delay(1500);
+			Demo_2 = 18;
+			break;
+		case 18:
+			HAL_Delay(50);
+			target_2 = -129;
+			if(done_2 == 1)
+			{
+				done_1 = 0;
+				done_2 = 0;
+				done_3 = 0;
+				Demo_2 = 19;
+			}
+			break;
+		case 19:
+			HAL_Delay(50);
+			target_1 = -149;
+			target_3 = -72;
+			if(done_1 == 1)
+			{
+				if(done_3 == 1)
+				{
+					done_1 = 0;
+					done_2 = 0;
+					done_3 = 0;
+					Demo_2 = 20;
+				}
+			}
+			break;
+		case 20:
+			HAL_Delay(50);
+			degree_2 = 0;
+			HAL_Delay(1500);
+			Demo_2 = 21;
+			break;
+		case 21:
+			HAL_Delay(50);
+			target_2 = 0;
+			HAL_Delay(750);
+			target_1 = 0;
+			target_3 = 0;
+			degree_1 = 0;
+			if(done_1 == 1 && done_2 == 1)
+			{
+				if(done_3 == 1)
+				{
+					done_1 = 0;
+					done_2 = 0;
+					done_3 = 0;
+					Demo_2 = 0;
+				}
+			}
+			break;
+	}*/
+	/*Demo3*/
+	switch(Demo_3)
+	{
+		case 1:
+			degree_2 = 100;
+			HAL_Delay(1500);
+			Demo_3 = 2;
+			break;
+		case 2:
+			target_3 = -50;
+			if(position_3 == -50)
+				Demo_3 = 3;
+			break;
+		case 3:
+			target_2 = -165;
+			if(position_2 == -165)
+				Demo_3 = 4;
+			break;
+		case 4:
+			target_3 = -80;
+			if(position_3 == -80)
+				Demo_3 = 5;
+			break;
+		case 5:
+			target_3 = -55;
+			if(position_3 == -55)
+				Demo_3 = 6;
+			break;
+		case 6:
+			target_1 = -25;
+			if(position_1 == -25)
+				Demo_3 = 7;
+			break;
+		case 7:
+			degree_1 = -25;
+			HAL_Delay(1500);
+			Demo_3 = 8;
+			break;
+		case 8:
+			target_3 = -90;
+			if(position_3 == -90)
+				Demo_3 = 9;
+			break;
+		case 9:
+			target_2 = -155;
+			if(position_2 == -155)
+				Demo_3 = 10;
+			break;
+		case 10:
+			degree_1 = 0;
+			HAL_Delay(1500);
+			Demo_3 = 11;
+			break;
+		case 11:
+			target_1 = 0;
+			if(position_1 == 0)
+				Demo_3 = 12;
+			break;
+		case 12:
+			degree_2 = 50;
+			HAL_Delay(1500);
+			Demo_3 = 13;
+			break;
+		case 13:
+			target_3 = -115;
+			if(position_3 == -115)
+				Demo_3 = 14;
+			break;
+		case 14:
+			target_2 = -175;
+			if(position_2 == -175)
+				Demo_3 = 15;
+			break;
+		case 15:
+			target_3 = -100;
+			if(position_3 == -100)
+				Demo_3 = 16;
+			break;
+		case 16:
+			target_2 = -155;
+			if(position_2 == -155)
+				Demo_3 = 17;
+			break;
+		case 17:
+			target_1 = -25;
+			if(position_1 == -25)
+				Demo_3 = 18;
+			break;
+		case 18:
+			target_3 = -125;
+			degree_1 = 25;
+			if(position_3 == -125)
+				Demo_3 = 19;
+			break;
+		case 19:
+			target_1 = -20;
+			if(position_1 == -20)
+				Demo_3 = 20;
+			break;
+		case 20:
+			degree_2 = 50;
+			HAL_Delay(1500);
+			Demo_3 = 21;
+			break;
+		case 21:
+			target_2 = -180;
+			if(position_2 == -180)
+				Demo_3 = 22;
+			break;
+		case 22:
+			degree_1 = 0;
+			HAL_Delay(1500);
+			Demo_3 = 23;
+			break;
+		case 23:
+			target_3 = -90;
+			if(position_3 == -90)
+				Demo_3 = 24;
+			break;
+		case 24:
+			target_2 = -160;
+			if(position_2 == -160)
+				Demo_3 = 25;
+			break;
+		case 25:
+			target_1 = -40;
+			if(position_1 == -40)
+				Demo_3 = 26;
+			break;
+		case 26:
+			degree_1 = -35;
+			HAL_Delay(1500);
+			Demo_3 = 27;
+			break;
+		case 27:
+			target_2 = -170;
+			degree_1 = -10;
+			if(position_2 == -170)
+				Demo_3 = 28;
+			break;
+		case 28:
+			target_1 = -25;
+			if(position_1 == -25)
+				Demo_3 = 29;
+			break;
+		case 29:
+
+			target_2 = -160;
+			if(position_2 == -160)
+				Demo_3 = 30;
+			break;
+		case 30:
+			target_1 = 35;
+			degree_1 = 35;
+			if(position_1 == 35)
+				Demo_3 = 31;
+			break;
+		case 31:
+			target_2 = -170;
+			if(position_2 == -170)
+				Demo_3 = 32;
+			break;
+		case 32:
+			target_1 = 20;
+			if(position_1 == 20)
+				Demo_3 = 33;
+			break;
+		case 33:
+			target_2 = -155;
+			if(position_2 == -155)
+				Demo_3 = 34;
+			break;
+		case 34:
+			degree_1 = 90;
+			degree_2 = 0;
+			HAL_Delay(1500);
+			Demo_3 = 35;
+			break;
+		case 35:
+			target_1 = -8;
+			if(position_1 == -8)
+				Demo_3 = 36;
+			break;
+		case 36:
+			target_3 = -75;
+			if(position_3 == -75)
+				Demo_3 = 37;
+			break;
+		case 37:
+			target_2 = -170;
+			if(position_2 == -170)
+				Demo_3 = 38;
+			break;
+		case 38:
+			degree_2 = 100;
+			HAL_Delay(1500);
+			Demo_3 = 39;
+			break;
+		case 39:
+			target_2 = -130;
+			if(position_2 == -130)
+				Demo_3 = 40;
+			break;
+		case 40:
+			target_1 = 30;
+			if(position_1 == 30)
+				Demo_3 = 41;
+			break;
+		case 41:
+			target_3 = -95;
+			if(position_3 == -95)
+				Demo_3 = 42;
+			break;
+		case 42:
+			target_2 = -170;
+			if(position_2 == -170)
+				Demo_3 = 43;
+			break;
+		case 43:
+			degree_2 = 0;
+			HAL_Delay(1500);
+			Demo_3 = 44;
+			break;
+		case 44:
+			target_2 = -150;
+			if(position_2 == -150)
+				Demo_3 = 45;
+			break;
+		case 45:
+			target_1 = 5;
+			if(position_1 == 5)
+				Demo_3 = 46;
+			break;
+		case 46:
+			degree_1 = 0;
+			HAL_Delay(1500);
+			Demo_3 = 47;
+			break;
+		case 47:
+			target_3 = -90;
+			if(position_3 == -90)
+				Demo_3 = 48;
+			break;
+		case 48:
+			target_2 = -170;
+			if(position_2 == -170)
+				Demo_3 = 49;
+			break;
+		case 49:
+			degree_2 = 100;
+			HAL_Delay(1500);
+			Demo_3 = 50;
+			break;
+		case 50:
+			target_2 = -145;
+			if(position_2 == -145)
+				Demo_3 = 51;
+			break;
+		case 51:
+			target_1 = 30;
+			if(position_1 == 30)
+				Demo_3 = 52;
+			break;
+		case 52:
+			target_3 = -80;
+			if(position_3 == -80)
+				Demo_3 = 53;
+			break;
+		case 53:
+			degree_2 = 0;
+			HAL_Delay(1500);
+			Demo_3 = 54;
+			break;
+		case 54:
+			target_2 = -135;
+			if(position_2 == -135)
+				Demo_3 = 55;
+			break;
+		case 55:
+			target_1 = -20;
+			if(position_1 == -20)
+				Demo_3 = 56;
+			break;
+		case 56:
+			degree_1 = -150;
+			HAL_Delay(1500);
+			Demo_3 = 57;
+			break;
+		case 57:
+			target_3 = -100;
+			if(position_3 == -100)
+				Demo_3 = 58;
+			break;
+		case 58:
+			target_2 = -170;
+			if(position_2 == -170)
+				Demo_3 = 59;
+			break;
+		case 59:
+			degree_2 = 100;
+			HAL_Delay(1500);
+			Demo_3 = 60;
+			break;
+		case 60:
+			target_2 = -130;
+			if(position_2 == -130)
+				Demo_3 = 61;
+			break;
+		case 61:
+			target_1 = 30;
+			degree_1 = 0;
+			if(position_1 == 30)
+				Demo_3 = 62;
+			break;
+		case 62:
+			target_3 = -70;
+			if(position_3 == -70)
+				Demo_3 = 63;
+			break;
+		case 63:
+			degree_2 = 0;
+			HAL_Delay(1500);
+			Demo_3 = 64;
+			break;
+		case 64:
+			target_2 = 0;
+			target_3 = 0;
+			HAL_Delay(5000);
+			target_1 = 0;
 			break;
 	}
-	/*Demo2*/
-	/*if(Demo_2)
+
+	/*Done*/
+	if(target_1 == position_1)
 	{
-
+		/*if(ini_1 == 1)
+		{*/
+			done_1 = 1;
+			/*ini_1 = 0;
+		}*/
+	}
+	/*else
+	{
+		done_1 = 0;
+		ini_1 = 1;
 	}*/
-	/*Reset*/
+	if(target_2 == position_2)
+	{
+		/*if(ini_2 == 1)
+		{*/
+			done_2 = 1;
+			/*ini_2 = 0;
+		}*/
+	}
+	/*else
+	{
+		done_2 = 0;
+		ini_2 = 1;
+	}*/
+	if(target_3 == position_3)
+	{
+		/*if(ini_3 == 1)
+		{*/
+			done_3 = 1;
+			/*ini_3 = 0;
+		}*/
+	}
+	/*else
+	{
+		done_3 = 0;
+		ini_3 = 1;
+	}*/
 
+	/*Limit*/
+	if(target_2 < -200)
+	{
+		target_2 = -200;
+	}
+	else if(target_2 > 0)
+	{
+		target_2 = 0;
+	}
+
+	if(target_3 < -270)
+	{
+		target_3 = -270;
+	}
+	else if(target_3 > 0)
+	{
+		target_3 = 0;
+	}
+
+	/*Reset*/
 	if(Reset == 1)
 	{
 		HAL_NVIC_SystemReset();
@@ -402,11 +1156,16 @@ int main(void)
 	relate_3 = 0;
 
 	/*All at Once*/
-	if(Once != TEMP)
+	if(Once != TEMP )
 	{
 		target_1 = Once;
 		target_2 = Once;
 		target_3 = Once;
+		if(Once <= 180 && Once >=0)
+		{
+			degree_1 = 0;
+			degree_2 = 0;
+		}
 	}
 
 	TEMP = Once;
@@ -419,14 +1178,36 @@ int main(void)
 	/*Record position & reset i (Considering the circumstances which target changed while operating)*/
 	if(i >= (fabs(targeted_1-position_1)/1.8*8*2*ratio_1) || target_1 != targeted_1)
 	{
+		/*if(deceleration_1 == 1)
+		{
+			target_1 = temp_target_1;
+			deceleration_1 = 0;
+		}*/
 		if(direction_1 == 1)
 			position_1 += round(1.8/8/2/ratio_1*i);
 		else if(direction_1 == 0)
 			position_1 -= round(1.8/8/2/ratio_1*i);
+		/*if(directioned_1 != direction_1)
+		{
+			if(ARR_1<initial_speed)
+			{
+				ARR_1+=10;
+			}
+			__HAL_TIM_SET_AUTORELOAD(&htim3,ARR_1);
+			deceleration_1 = 1;
+		}*/
 		i = 0;
 	}
-	/*Record target*/
+	/*Record target & direction*/
 	targeted_1 = target_1;
+	/*if((target_1-position_1)>=0)
+	{
+		directioned_1 = 1;
+	}
+	else
+	{
+		directioned_1 = 0;
+	}*/
 	/*DIR*/
 	if((targeted_1-position_1)>=0)
 	{
