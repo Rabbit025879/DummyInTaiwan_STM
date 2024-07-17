@@ -86,9 +86,14 @@ int ini_3 = 1;
 int Demo_1 = 0;
 int Demo_2 = 0;
 int Demo_3 = 0;
+int Demo_loop = 1;
+int change = 0;
 int Cube = 100;
 int step = 1;
 
+int state = 0;
+int toggle = 0;
+int deb = 0;
 int down_p = 0;
 int down_n = 0;
 int mid_p = 0;
@@ -126,7 +131,7 @@ double angle_1 = 0.0;
 double angle_2 = 0.0;
 double angle_3 = 0.0;
 double ratio_1 = 27.0;
-double ratio_2 = 27.0;
+double ratio_2 =  27.0;
 double ratio_3 = 4.658;
 int direction_1 = 1;
 int direction_2 = 1;
@@ -219,8 +224,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-
-	HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -269,6 +273,35 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	/*Button*/
+	state = HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_13);
+	if(state == 1)
+	{
+		if(deb == 0)
+		{
+			if(toggle == 0)
+			{
+				Demo_loop = 0;
+				target_1 = 0;
+				target_2 = 0;
+				target_3 = 0;
+				degree_1 = 0;
+				degree_2 = 0;
+				toggle = 1;
+				HAL_Delay(500);
+			}
+			else if(toggle == 1)
+			{
+				Demo_loop = 1;
+				toggle = 0;
+				HAL_Delay(500);
+			}
+		}
+		deb = 1;
+	}
+	if(state == 0)
+	{
+		deb = 0;
+	}
 	/*if(down_p == 1)
 	{
 		target_1++;
@@ -331,26 +364,12 @@ int main(void)
 	/*switch(Demo_1)
 	{
 		case 1:
-			if(ini)
-			{
-				done_1 = 0;
-				done_2 = 0;
-				done_3 = 0;
-				ini = 0;
-			}
+			Switch = 0;
 			target_1 = 0;
 			target_2 = -138;
 			target_3 = -55;
-			if(done_2 == 1)
-			{
-				if(done_3 == 1)
-				{
-					done_1 = 0;
-					done_2 = 0;
-					done_3 = 0;
-					Demo_1 = 2;
-				}
-			}
+			if(position_1 == 0 && position_2 == -138 && position_3 == -55)
+				Demo_1 = 2;
 			break;
 		case 2:
 			HAL_Delay(50);
@@ -362,28 +381,15 @@ int main(void)
 			HAL_Delay(50);
 			target_1 = 90;
 			target_2 = -50;
-			if(done_1 == 1 && done_2 == 1)
-			{
-				done_1 = 0;
-				done_2 = 0;
-				done_3 = 0;
+			if(position_1 == 90 && position_2 == -50)
 				Demo_1 = 4;
-			}
 			break;
 		case 4:
 			HAL_Delay(50);
 			target_2 = -115;
 			target_3 = -45;
-			if(done_2 == 1)
-			{
-				if(done_3 == 1)
-				{
-					done_1 = 0;
-					done_2 = 0;
-					done_3 = 0;
-					Demo_1 = 5;
-				}
-			}
+			if(position_2 == -115 && position_3 == -45)
+				Demo_1 = 5;
 			break;
 		case 5:
 			HAL_Delay(50);
@@ -394,36 +400,21 @@ int main(void)
 		case 6:
 			HAL_Delay(50);
 			target_2 = -95;
-			if(done_2 == 1)
-			{
-				done_1 = 0;
-				done_2 = 0;
-				done_3 = 0;
+			if(position_2 == -95)
 				Demo_1 = 7;
-			}
 			break;
 		case 7:
 			HAL_Delay(50);
 			target_1 = 45;
-			if(done_1 == 1)
-			{
-				done_1 = 0;
-				done_2 = 0;
-				done_3 = 0;
+			if(position_1 == 45)
 				Demo_1 = 8;
-			}
 			break;
 		case 8:
 			HAL_Delay(50);
 			target_2 = -138;
 			target_3 = -55;
-			if(done_2 == 1 && done_3 == 1)
-			{
-				done_1 = 0;
-				done_2 = 0;
-				done_3 = 0;
+			if(position_2 == -138 && position_3 == -55)
 				Demo_1 = 9;
-			}
 			break;
 		case 9:
 			HAL_Delay(50);
@@ -434,13 +425,8 @@ int main(void)
 		case 10:
 			HAL_Delay(50);
 			target_2 = -95;
-			if(done_2 == 1)
-			{
-				done_1 = 0;
-				done_2 = 0;
-				done_3 = 0;
+			if(position_2 == -95)
 				Demo_1 = 11;
-			}
 			break;
 		case 11:
 			HAL_Delay(50);
@@ -452,28 +438,15 @@ int main(void)
 			HAL_Delay(50);
 			target_1 = 90;
 			degree_1 = 0;
-			if(done_1 == 1)
-			{
-				done_1 = 0;
-				done_2 = 0;
-				done_3 = 0;
+			if(position_1 == 90)
 				Demo_1 = 13;
-			}
 			break;
 		case 13:
 			HAL_Delay(50);
 			target_2 = -90;
 			target_3 = -35;
-			if(done_2 == 1)
-			{
-				if(done_3 == 1)
-				{
-					done_1 = 0;
-					done_2 = 0;
-					done_3 = 0;
-					Demo_1 = 14;
-				}
-			}
+			if(position_2 == -90 && position_3 == -35)
+				Demo_1 = 14;
 			break;
 		case 14:
 			HAL_Delay(50);
@@ -485,32 +458,16 @@ int main(void)
 			HAL_Delay(50);
 			target_2 = -25;
 			target_3 = -45;
-			if(done_2 == 1)
-			{
-				if(done_3 == 1)
-				{
-					done_1 = 0;
-					done_2 = 0;
-					done_3 = 0;
-					Demo_1 = 16;
-				}
-			}
+			if(position_2 == -25 && position_3 == -45)
+				Demo_1 = 16;
 			break;
 		case 16:
 			HAL_Delay(50);
 			target_1 = 0;
 			target_2 = 0;
 			target_3 = 0;
-			if(done_1 == 1 && done_2 == 1)
-			{
-				if(done_3 == 1)
-				{
-					done_1 = 0;
-					done_2 = 0;
-					done_3 = 0;
-					Demo_1 = 0;
-				}
-			}
+			if(position_1 == 0 && position_2 == 0 && position_3 == 0)
+				Demo_1 = 1;
 			break;
 	}*/
 	/*Demo2*/
@@ -749,7 +706,7 @@ int main(void)
 			break;
 	}*/
 	/*Demo3*/
-	switch(Demo_3)
+	/*switch(Demo_3)
 	{
 		case 1:
 			degree_2 = 100;
@@ -1078,6 +1035,71 @@ int main(void)
 			HAL_Delay(5000);
 			target_1 = 0;
 			break;
+		default:
+			break;
+	}*/
+
+	switch(Demo_loop)
+	{
+		case 1:
+			Switch = 0;
+			target_1 = 0;
+			target_2 = -70;
+			target_3 = -70;
+			if(position_1 == 0 && position_2 == -70 && position_3 == -70)
+				Demo_loop = 2;
+			break;
+		case 2:
+			target_1 = 180;
+			if(position_1 == 180)
+				Demo_loop = 3;
+			break;
+		case 3:
+			degree_1 = 90;
+			HAL_Delay(1000);
+			degree_1 = -90;
+			HAL_Delay(1000);
+			Demo_loop = 4;
+			break;
+		case 4:
+			target_1 = -70;
+			if(position_1 == -70)
+				Demo_loop = 6;
+			break;
+		/*case 5:
+			degree_1 = 0;
+			HAL_Delay(1000);
+			Demo_loop = 6;
+			break;*/
+		case 6:
+			degree_1 = 0;
+			target_1 = 0;
+			target_2 = 0;
+			target_3 = 0;
+			if(position_1 == 0 && position_2 == 0 && position_3 == 0)
+				Demo_loop = 7;
+			break;
+		case 7:
+			target_1 = 90;
+			target_2 = -90;
+			target_3 = -90;
+			if(position_1 == 90 && position_2 == -90 && position_3 == -90)
+				Demo_loop = 8;
+			break;
+		case 8:
+			target_1 = 0;
+			target_2 = 0;
+			target_3 = 0;
+			if(position_1 == 0 && position_2 == 0 && position_3 == 0)
+				Demo_loop = 1;
+			break;
+		case 9:
+			target_1 = 0;
+			target_2 = 0;
+			target_3 = 0;
+			degree_1 = 0;
+			Demo_loop = 0;
+			break;
 	}
 
 	/*Done*/
@@ -1161,10 +1183,10 @@ int main(void)
 		target_1 = Once;
 		target_2 = Once;
 		target_3 = Once;
-		if(Once <= 180 && Once >=0)
+		if(-Once <= 180 && -Once >=0)
 		{
-			degree_1 = 0;
-			degree_2 = 0;
+			HAL_Delay(1000);
+			degree_1 = -Once;
 		}
 	}
 
@@ -2002,11 +2024,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : B1_Pin */
-  GPIO_InitStruct.Pin = B1_Pin;
+  /*Configure GPIO pin : PC13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED_GREEN_Pin LED_RED_Pin */
   GPIO_InitStruct.Pin = LED_GREEN_Pin|LED_RED_Pin;
@@ -2067,13 +2089,22 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-/*void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if(GPIO_Pin == GPIO_PIN_6)
+	if(GPIO_Pin == GPIO_PIN_13)
 	{
-		HAL_NVIC_SystemReset();
+		if(change == 0)
+		{
+			Demo_loop = 1;
+			change = 1;
+		}
+		if(change == 1)
+		{
+			Demo_loop = 9;
+			change = 0;
+		}
 	}
-}*/
+}
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
